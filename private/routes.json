@@ -1,0 +1,50 @@
+	
+	[
+		
+		{
+			"name" : "individual-line",
+			"path" : "/of/(.[^/]+)/I/would/(.[^/]+)",
+			"params" : [ "company", "id" ],
+			"controller" : "Controller_Lines",
+			"method" : "individual",
+			"test" : {
+				"path" : "/of/microsoft/I/would/123",
+				"results" :
+				{
+					"company" : "microsoft",
+					"id" : 123
+				}
+			}
+		},
+		
+		{
+			"name" : "company-lines",
+			"path" : "/of/(.[^/]+)",
+			"params" : [ "company" ],
+			"controller" : "Controller_Lines",
+			"method" : "company",
+			"test" : {
+				"path" : "/of/microsoft",
+				"results" :
+				{
+					"company" : "microsoft"
+				}
+			}
+		},
+		
+		{
+			"name" : "about",
+			"path" : "/about",
+			"controller" : "Controller_Static",
+			"method" : "about"
+		},
+		
+		{
+			"name" : "home",
+			"path" : "/",
+			"controller" : "Controller_Home",
+			"method" : "index"
+		}
+		
+	]
+	

@@ -1,0 +1,13 @@
+	
+	@import url('./style.css');
+	
+	body {
+		padding-left: 20px;
+		min-width: 395px;
+	}
+	
+	header {
+		background: #fff url('http://ifiwasceo.com/web/img/logo.png') no-repeat top center;
+		height: 205px;
+	}
+	

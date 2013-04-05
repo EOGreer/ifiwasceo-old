@@ -8,38 +8,74 @@
 	class Robin_Request
 	{
 		
-		/* Accept-type */
+		/* @var Accept-type */
 		protected $accept = null;
 		
-		/* Base URL */
+		/* @var Base URL */
 		protected $baseurl = null;
 		
-		/* GET array */
-		protected $get = array();
-		
-        /* HTTP Method */
+        /* @var HTTP Method */
         protected $method = null;
         
-		/* PARAMS array */
-		protected $params = array();
+		/* @var PARAM array */
+		protected $param = array();
 		
-		/* Path */
+		/* @var Path */
 		protected $path = null;
 		
-		/* POST array */
+		/* @var POST array */
 		protected $post = array();
 		
-		/* SERVER array */
+		/* @var GET array */
+		protected $query = array();
+		
+		/* @var SERVER array */
 		protected $server = array();
 		
+		/**
+		 *	Get or set data!
+		 *	
+		 *	@param $name The name of the method being called.
+		 *	@param $args The arguments of the method being called.
+		 *	@return {$this->$name}, {$this}, mixed or null.
+		 */
+		public function __call($name, $args)
+		{
+			// method($var, $var2)
+			if ((false === empty($args[0])) && (false === empty($args[1])) && (true === is_array($this->{$name}))) {
+				$this->{$name}[$args[0]] = $args[1];
+				return $this;
+			}
+			// method(array $var)
+			elseif ((false === empty($args[0])) && (true === is_array($args[0]))) {
+				$this->{$name} = array_merge($this->{$name}, $args[0]);
+				return $this;
+			}
+			// method($var) where method is array
+			elseif ((false === empty($args)) && (false === empty($args[0])) && (true === is_array($this->{$name}))) {
+				if (false === empty($this->{$name}[$args[0]])) return $this->{$name}[$args[0]];
+				else return null;
+			}
+			// method($var) where method is non-array.
+			elseif (false === empty($args)) {
+				$this->{$name} = $args[0];
+				return $this;
+			}
+			// method()
+			return $this->{$name};
+		}
+		
+		/**
+		 *	Builds the request object.
+		 */
 		public function __construct()
 		{
 			$this->baseurl($_SERVER['HTTP_HOST'])
                     ->method($_SERVER['REQUEST_METHOD'])
 					->path($_SERVER['REQUEST_URI'])
-					->post(null, $_POST)
-					->query(null, $_GET)
-					->server(null, $_SERVER);
+					->post($_POST)
+					->query($_GET)
+					->server($_SERVER);
 			// Neutralise the globals. But not $_SERVER.
 			$_GET = $_POST = array();
 			
@@ -48,152 +84,10 @@
 		}
 		
 		/**
-		 *	The accept-type.
-		 */
-		public function accept($a = null)
-		{
-			if (false === empty($a)) {
-				$this->accept = $a;
-				return $this;
-			}
-			
-			return $this->accept;
-		}
-		
-		/**
-		 *	The base url.
-		 */
-		public function baseurl($b = null)
-		{
-			if (false === empty($b)) {
-				$this->baseurl = $b;
-				return $this;
-			}
-			
-			return $this->baseurl;
-		}
-		
-		/**
-		 *	Returns the current url.
+		 *	Returns the current URL the visitor is on.
+		 *	
+		 *	@return string
 		 */
 		public function currenturl() { return $this->baseurl().$this->path(); }
-		
-		/**
-		 *	A filter function to filter out evil things.
-		 *	@TODO Write this.
-		 */
-		public function filter($i)
-		{
-			if (true === is_array($i)) foreach($i as $k => $v) $i[$this->filter($k)] = $this->filter($v);
-			
-			return $i;
-		}
-		
-        public function method($m = null)
-        {
-            if (false === empty($m)) {
-                $this->method = strtolower($m);
-                return $this;
-            }
-            
-            return $this->method;
-        }
-        
-		/**
-		 *	Incredi-method.
-		 *	Either gets all the params, one param, null, sets a param or sets ALL the params.
-		 */
-		public function param($k = null, $v = null)
-		{
-			if ((false === empty($v)) && (true === is_array($v))) {
-				$this->params = array_merge($this->params, $v);
-				return $this;
-			}
-			elseif ((false === empty($k)) && (false === empty($v))) {
-				$this->params[$k] = $this->filter($v);
-				return $this;
-			}
-			elseif (false === empty($k)) {
-				if (false === empty($this->params[$k])) return $this->params[$k];
-				else return null;
-			}
-			return $this->params;
-		}
-		
-		/**
-		 *	The path.
-		 */
-		public function path($p = null)
-		{
-			if (false === empty($p)) {
-				$this->path = $p;
-				return $this;
-			}
-			
-			return $this->path;
-		}
-		
-		/**
-		 *	Incredi-method.
-		 *	Either gets all the POSTs, one POST, null, sets a POST or sets ALL the POSTs.
-		 */
-		public function post($k = null, $v = null)
-		{
-			if ((false === empty($v)) && (true === is_array($v))) {
-				$this->post = array_merge($this->post, $v);
-				return $this;
-			}
-			elseif ((false === empty($k)) && (false === empty($v))) {
-				$this->post[$k] = $this->filter($v);
-				return $this;
-			}
-			elseif (false === empty($k)) {
-				if (false === empty($this->post[$k])) return $this->post[$k];
-				else return null;
-			}
-			return $this->post;
-		}
-		
-		/**
-		 *	Incredi-method.
-		 *	Either gets all the GETs, one GET, null, sets a GET or sets ALL the GETs.
-		 */
-		public function query($k = null, $v = null)
-		{
-			if ((false === empty($v)) && (true === is_array($v))) {
-				$this->get = array_merge($this->get, $v);
-				return $this;
-			}
-			elseif ((false === empty($k)) && (false === empty($v))) {
-				$this->get[$k] = $this->filter($v);
-				return $this;
-			}
-			elseif (false === empty($k)) {
-				if (false === empty($this->get[$k])) return $this->get[$k];
-				else return null;
-			}
-			return $this->get;
-		}
-		
-		/**
-		 *	Incredi-method.
-		 *	Either gets all the SERVERs, one SERVER, null, sets a SERVER or sets ALL the SERVERs.
-		 */
-		public function server($k = null, $v = null)
-		{
-			if ((false === empty($v)) && (true === is_array($v))) {
-				$this->server = array_merge($this->server, $v);
-				return $this;
-			}
-			elseif ((false === empty($k)) && (false === empty($v))) {
-				$this->server[$k] = $this->filter($v);
-				return $this;
-			}
-			elseif (false === empty($k)) {
-				if (false === empty($this->server[$k])) return $this->server[$k];
-				else return null;
-			}
-			return $this->server;
-		}
 		
 	}

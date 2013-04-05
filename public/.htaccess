@@ -1,0 +1,17 @@
+	
+	RewriteEngine on
+	RewriteBase /
+	
+	# Stop any .* files from being accessed
+	<Files .*>
+		Order Deny,Allow
+		Deny from all
+	</Files>
+	
+	# Let existing files be accessed
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	
+	# Else route all other URIs through the framework.
+	RewriteRule .* index.php/$0 [PT]
+	

@@ -16,42 +16,29 @@
 	
 	$req    = new Robin_Request();
 	$res    = new Robin_Response($req);
-	$routes = new Robin_Route();
 	
 	// Site configuration in site.php!
 	require_once('../private/site.php');
 	
-	$route = $routes->match($req->path());
-	if (false === empty($route)) {
-		$v = 0;
-		$w = false;
-		while (false === $w) {
-			$v++;
-			$w = true;
-//			prettyprint($route,'$route');
-			$controllerName = $route->controller();
-			$methodName = $route->method();
-//			prettyprint($controllerName,'$controllerName'); prettyprint($methodName,'$methodName');
-			if (false === class_exists($controllerName)) {
-				$route = $routes->match($routes::get404());
-				if ($v > 1) $route = null;
-				else $w = false;
-			}
-			if (false === method_exists($controllerName,$methodName)) {
-				$route = $routes->match($routes::get404());
-				if ($v > 1) $route = null;
-				else $w = false;
-			}
-			prettyprint($route,'$route');
-		}
-	}
-
+	$routes = new Robin_Route();
+	/* Only test when needed. */
+	//$routes->test();
+	
+	$route = $routes->find($req->path());
 	if (true === empty($route)) {
 		exit('Route not found. And no 404 route found.');
 	}
 	
-    $ctl = new $route->controller($req, $res);
+	$req->param(array_merge(array(
+		'controller' => $route->controller,
+		'method' => $route->method
+	), (array)$route->params));
+	
+	$controller = $req->param('controller');
+	$method = $req->param('method');
+	
+    $ctl = new $controller($req, $res);
     $ctl->before();
-    $ctl->{$route->method()}();
+    $ctl->{$method}();
     $ctl->after();
 ?>

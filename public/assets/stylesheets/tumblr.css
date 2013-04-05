@@ -1,0 +1,26 @@
+	
+	.text {
+	}
+		
+		.text h3 {
+			font-size: 26px;
+			font-style: italic;
+			margin-bottom: 10px;
+		}
+	
+	.photo {
+	}
+		
+		.photo img {
+			margin-bottom: 5px;
+		}
+	
+	.quote {
+	}
+		
+		.quote h3 {
+			font-size: 28px;
+			font-style: italic;
+			margin-bottom: 10px;
+		}
+	

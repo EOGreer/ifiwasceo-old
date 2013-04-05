@@ -11,8 +11,8 @@
 		const DELETE = 4;
 		
 		public static $hostname = 'localhost';
-		public static $username = 'username';
-		public static $password = 'password';
-		public static $database = 'database';
+		public static $username = 'iamceo';
+		public static $password = 'jcQs2jUqtBCV6z9Y';
+		public static $database = 'ifiwasceo';
 		
 	}
